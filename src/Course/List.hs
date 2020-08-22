@@ -111,8 +111,7 @@ headOr = foldRight const
 product ::
   List Int
   -> Int
-product =
-  error "todo: Course.List#product"
+product = foldRight (\x y -> x * y) 1
 
 -- | Sum the elements of the list.
 --
@@ -126,8 +125,7 @@ product =
 sum ::
   List Int
   -> Int
-sum =
-  error "todo: Course.List#sum"
+sum = foldRight (+) 0
 
 -- | Return the length of the list.
 --
