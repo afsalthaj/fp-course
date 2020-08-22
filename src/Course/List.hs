@@ -150,8 +150,7 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map =
-  error "todo: Course.List#map"
+map f = foldRight (\x y -> f x :. y) Nil
 
 -- | Return elements satisfying the given predicate.
 --
