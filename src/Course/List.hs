@@ -184,8 +184,9 @@ filter f = foldRight (\x y -> if f x then (x :. y) else y) Nil
   List a
   -> List a
   -> List a
-(++) xs ys = foldRight (:.) ys xs
---infixr 5 ++
+(++) = flip (foldRight (:.))
+
+infixr 5 ++
 
 -- | Flatten a list of lists to a list.
 --
@@ -200,8 +201,7 @@ filter f = foldRight (\x y -> if f x then (x :. y) else y) Nil
 flatten ::
   List (List a)
   -> List a
-flatten =
-  error "todo: Course.List#flatten"
+flatten = foldRight (\xs acc -> xs ++ acc) Nil
 
 -- | Map a function then flatten to a list.
 --
