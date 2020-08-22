@@ -95,11 +95,8 @@ foldLeft f b (h :. t) = let b' = f b h in b' `seq` foldLeft f b' t
 -- prop> \x -> x `headOr` infinity == 0
 --
 -- prop> \x -> x `headOr` Nil == x
-headOr ::
-  a
-  -> List a
-  -> a
-headOr a xs = foldRight (\x _ -> x) a xs   
+headOr :: a -> List a -> a
+headOr = foldRight const
 
 -- | The product of the elements of a list.
 --
