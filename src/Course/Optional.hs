@@ -23,12 +23,10 @@ data Optional a =
 --
 -- >>> mapOptional (+1) (Full 8)
 -- Full 9
-mapOptional ::
-  (a -> b)
-  -> Optional a
-  -> Optional b
-mapOptional =
-  error "todo: Course.Optional#mapOptional"
+mapOptional :: (a -> b) -> Optional a -> Optional b
+mapOptional f (Full a) = Full (f a)
+mapOptional _ Empty   = Empty
+
 
 -- | Bind the given function on the possible value.
 --
@@ -39,13 +37,20 @@ mapOptional =
 -- Full 7
 --
 -- >>> bindOptional (\n -> if even n then Full (n - 1) else Full (n + 1)) (Full 9)
--- Full 10
+-- (Error while loading modules for evaluation)
+-- [1 of 1] Compiling Course.Optional  ( /Users/afsalthaj/github/fp-course/src/Course/Optional.hs, interpreted )
+-- <BLANKLINE>
+-- /Users/afsalthaj/github/fp-course/src/Course/Optional.hs:8:1-18: error:
+--     Could not find module ‘Course.Core’
+--     Use -v to see a list of the files searched for.
+-- Failed, no modules loaded.
+--
 bindOptional ::
   (a -> Optional b)
   -> Optional a
   -> Optional b
-bindOptional =
-  error "todo: Course.Optional#bindOptional"
+bindOptional f (Full a) = f a
+bindOptional _ Empty  = Empty
 
 -- | Return the possible value if it exists; otherwise, the second argument.
 --
@@ -53,13 +58,21 @@ bindOptional =
 -- 8
 --
 -- >>> Empty ?? 99
--- 99
+-- (Error while loading modules for evaluation)
+-- [1 of 1] Compiling Course.Optional  ( /Users/afsalthaj/github/fp-course/src/Course/Optional.hs, interpreted )
+-- <BLANKLINE>
+-- /Users/afsalthaj/github/fp-course/src/Course/Optional.hs:8:1-18: error:
+--     Could not find module ‘Course.Core’
+--     Use -v to see a list of the files searched for.
+-- Failed, no modules loaded.
+-- these are operators, but they are put in paranthesis
 (??) ::
   Optional a
   -> a
   -> a
-(??) =
-  error "todo: Course.Optional#(??)"
+(??) = \opt a -> case opt of 
+   Full a1 -> a1
+   Empty -> a
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
 -- use the second value.
@@ -79,8 +92,11 @@ bindOptional =
   Optional a
   -> Optional a
   -> Optional a
-(<+>) =
-  error "todo: Course.Optional#(<+>)"
+
+(<+>) = \a b -> case (a, b) of 
+  (Full a1, _) -> Full a1
+  (Empty, Full b1) -> Full b1
+  (Empty, Empty) -> Empty
 
 -- | Replaces the Full and Empty constructors in an optional.
 --
@@ -89,13 +105,9 @@ bindOptional =
 --
 -- >>> optional (+1) 0 Empty
 -- 0
-optional ::
-  (a -> b)
-  -> b
-  -> Optional a
-  -> b
-optional =
-  error "todo: Course.Optional#optional"
+optional ::(a -> b) -> b -> Optional a -> b
+optional f b (Full a) = f a
+optional f v Empty = v  
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b
 applyOptional f a = bindOptional (\f' -> mapOptional f' a) f

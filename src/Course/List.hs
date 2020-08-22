@@ -30,7 +30,7 @@ import qualified Numeric as N
 
 -- BEGIN Helper functions and data types
 
--- The custom list type
+-- The custom list type -- list is a recursive algebraic data type
 data List t =
   Nil
   | t :. List t
