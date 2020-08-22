@@ -184,10 +184,8 @@ filter f = foldRight (\x y -> if f x then (x :. y) else y) Nil
   List a
   -> List a
   -> List a
-(++) =
-  error "todo: Course.List#(++)"
-
-infixr 5 ++
+(++) xs ys = foldRight (:.) ys xs
+--infixr 5 ++
 
 -- | Flatten a list of lists to a list.
 --
