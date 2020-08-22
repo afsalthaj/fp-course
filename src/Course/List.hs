@@ -31,9 +31,7 @@ import qualified Numeric as N
 -- BEGIN Helper functions and data types
 
 -- The custom list type -- list is a recursive algebraic data type
-data List t =
-  Nil
-  | t :. List t
+data List t = Nil | t :. List t
   deriving (Eq, Ord)
 
 -- Right-associative
@@ -49,11 +47,37 @@ infinity =
   let inf x = x :. inf (x+1)
   in inf 0
 
+-- CONSTRUCTOR REPLACEMENT
 -- functions over List that you may consider using
 foldRight :: (a -> b -> b) -> b -> List a -> b
 foldRight _ b Nil      = b
 foldRight f b (h :. t) = f h (foldRight f b t)
 
+-- foldRight (+) 0 (1 :. 2 :. 3 :. Nil)
+-- 1 :. 2 :. 3 :. Nil
+-- 1 + 2 + 3 + 0
+-- foldRight f a (1 :. 2 :. Nil)
+-- 1 :. 2 :. Nil
+-- 1 `f` 2 `f` a
+-- f 1 (f 2 a)
+-- Everything foldLeft is foldRight can do
+
+
+-- foldLeft is just FOR LOOP (there is nothing essential about foldLeft, but foldRight is important)
+-- the essence of foldRight is constructor replacement.
+-- foldLeft f z xs;
+-- var accum = z;
+-- xs.foreach(x => {
+-- accum = f(accum, x);  
+-- })
+-- return accum;
+
+-- 1 :. 2 :. Nil
+-- 0
+-- 0 + 1
+-- 1
+-- 1 + 2
+-- 3
 foldLeft :: (b -> a -> b) -> b -> List a -> b
 foldLeft _ b Nil      = b
 foldLeft f b (h :. t) = let b' = f b h in b' `seq` foldLeft f b' t
@@ -75,8 +99,7 @@ headOr ::
   a
   -> List a
   -> a
-headOr =
-  error "todo: Course.List#headOr"
+headOr a xs = foldRight (\x _ -> x) a xs   
 
 -- | The product of the elements of a list.
 --
