@@ -150,7 +150,7 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map f = foldRight (\x y -> f x :. y) Nil
+map f = foldRight ((:.) . f) Nil
 
 -- | Return elements satisfying the given predicate.
 --
@@ -166,8 +166,7 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter =
-  error "todo: Course.List#filter"
+filter f = foldRight (\x y -> if f x then (x :. y) else y) Nil
 
 -- | Append two lists to a new list.
 --
