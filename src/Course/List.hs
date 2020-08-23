@@ -275,9 +275,8 @@ seqOptional = foldRight (twiceOptional (:.)) (Full Nil)
 find ::
   (a -> Bool)
   -> List a
-  -> Optional a
-find =
-  error "todo: Course.List#find"
+  -> Optional a  
+find f = foldRight (\a o -> if f a then Full a else o) Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
