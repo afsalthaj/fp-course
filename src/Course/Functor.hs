@@ -98,8 +98,7 @@ instance Functor ((->) t) where
   a
   -> k b
   -> k a
-(<$) =
-  error "todo: Course.Functor#(<$)"
+(<$) a kb = const a <$> kb
 
 -- | Anonymous map producing unit value.
 --
