@@ -82,6 +82,8 @@ instance Functor ((->) t) where
     -> ((->) t a)
     -> ((->) t b)
   (<$>) f f2 = f . f2
+  -- <$> = .
+  -- Functor for function is composition
 
 -- | Anonymous map. Maps a constant value on a functor.
 --
