@@ -101,6 +101,8 @@ instance Applicative Optional where
   (<*>) (Full fn) Empty = Empty
   (<*>) Empty _ = Empty
 
+-- the whole thing is (<*>) f a = bindOptional (flip mapOptional a ) f
+
 -- | Insert into a constant function.
 --
 -- >>> ((+) <*> (+10)) 3
