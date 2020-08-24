@@ -27,6 +27,9 @@ import qualified Prelude as P(fmap, return, (>>=))
 -- * The law of interchange
 --   `∀u y. u <*> pure y = pure ($ y) <*> u`
 
+-- (<$>) ::   a -> b -> fa -> fb
+-- (<*>) :: f (a -> b) -> fa -> fb
+
 class Functor k => Applicative k where
   pure ::
     a -> k a
@@ -45,17 +48,16 @@ infixl 4 <*>
 -- >>> ExactlyOne (+10) <*> ExactlyOne 8
 -- ExactlyOne 18
 instance Applicative ExactlyOne where
-  pure ::
-    a
-    -> ExactlyOne a
-  pure =
-    error "todo: Course.Applicative pure#instance ExactlyOne"
+  pure :: a -> ExactlyOne a
+  pure = ExactlyOne
   (<*>) ::
     ExactlyOne (a -> b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (<*>) =
-    error "todo: Course.Applicative (<*>)#instance ExactlyOne"
+  (<*>) eoab eoa =
+    let f = runExactlyOne eoab
+        g = runExactlyOne eoa
+        in ExactlyOne (f g) 
 
 -- | Insert into a List.
 --
@@ -67,14 +69,12 @@ instance Applicative List where
   pure ::
     a
     -> List a
-  pure =
-    error "todo: Course.Applicative pure#instance List"
+  pure = (:. Nil)
   (<*>) ::
     List (a -> b)
     -> List a
     -> List b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance List"
+  (<*>) listab lista = flatMap (flip map lista) listab
 
 -- | Insert into an Optional.
 --
@@ -92,14 +92,14 @@ instance Applicative Optional where
   pure ::
     a
     -> Optional a
-  pure =
-    error "todo: Course.Applicative pure#instance Optional"
+  pure = Full
   (<*>) ::
     Optional (a -> b)
     -> Optional a
     -> Optional b
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance Optional"
+  (<*>) (Full fn) (Full a) = Full (fn a)
+  (<*>) (Full fn) Empty = Empty
+  (<*>) Empty _ = Empty
 
 -- | Insert into a constant function.
 --
@@ -252,8 +252,7 @@ lift1 ::
   (a -> b)
   -> k a
   -> k b
-lift1 =
-  error "todo: Course.Applicative#lift1"
+lift1 f = (pure f <*>)
 
 -- | Apply, discarding the value of the first argument.
 -- Pronounced, right apply.
