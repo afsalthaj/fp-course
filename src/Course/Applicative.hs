@@ -225,8 +225,7 @@ lift0 ::
   Applicative k =>
   a
   -> k a
-lift0 =
-  error "todo: Course.Applicative#lift0"
+lift0 = pure
 
 -- | Apply a unary function in the environment.
 -- /can be written using `lift0` and `(<*>)`./
@@ -269,8 +268,7 @@ lift1 f = (pure f <*>)
   k a
   -> k b
   -> k b
-(*>) =
-  error "todo: Course.Applicative#(*>)"
+(*>) fa fb = (\b a -> b) <$> fb <*> fa
 
 -- | Apply, discarding the value of the second argument.
 -- Pronounced, left apply.
