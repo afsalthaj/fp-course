@@ -268,7 +268,7 @@ lift1 f = (pure f <*>)
   k a
   -> k b
   -> k b
-(*>) fa fb = (\_ b -> b) <$> fa <*> fb
+(*>) fa fb = (flip const) <$> fa <*> fb
 
 -- | Apply, discarding the value of the second argument.
 -- Pronounced, left apply.
@@ -293,7 +293,7 @@ lift1 f = (pure f <*>)
   k b
   -> k a
   -> k b
-(<*) kb ka = (\b _ -> b) <$> kb <*> ka
+(<*) kb ka = const <$> kb <*> ka
 
 -- | Sequences a list of structures to a structure of list.
 --
