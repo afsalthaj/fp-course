@@ -268,7 +268,7 @@ lift1 f = (pure f <*>)
   k a
   -> k b
   -> k b
-(*>) fa fb = (\b a -> b) <$> fb <*> fa
+(*>) fa fb = (\_ b -> b) <$> fa <*> fb
 
 -- | Apply, discarding the value of the second argument.
 -- Pronounced, left apply.
@@ -293,8 +293,7 @@ lift1 f = (pure f <*>)
   k b
   -> k a
   -> k b
-(<*) =
-  error "todo: Course.Applicative#(<*)"
+(<*) kb ka = (\b _ -> b) <$> kb <*> ka
 
 -- | Sequences a list of structures to a structure of list.
 --
