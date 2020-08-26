@@ -369,8 +369,7 @@ filtering ::
   (a -> k Bool)
   -> List a
   -> k (List a)
-filtering =
-  error "todo: Course.Applicative#filtering"
+filtering f = foldRight(\a b ->  (\a b bool -> if (bool) then (a :. b) else b) <$> pure a <*> b <*> f a) (pure Nil)
 
 -----------------------
 -- SUPPORT LIBRARIES --
