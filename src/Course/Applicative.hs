@@ -369,7 +369,12 @@ filtering ::
   (a -> k Bool)
   -> List a
   -> k (List a)
-filtering f = foldRight(\a b ->  (\a b bool -> if (bool) then (a :. b) else b) <$> pure a <*> b <*> f a) (pure Nil)
+filtering f = foldRight(\a b ->  g <$> pure a <*> b <*> f a) (pure Nil)
+              where g = (\a b bool -> if (bool) then (a :. b) else b)
+
+
+
+-- filtering p = foldRight (\a fxs -> lift2 f 
 
 -----------------------
 -- SUPPORT LIBRARIES --
