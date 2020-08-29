@@ -16,8 +16,10 @@ import qualified Prelude as P((=<<))
 -- | All instances of the `Monad` type-class must satisfy one law. This law
 -- is not checked by the compiler. This law is given as:
 --
+
 -- * The law of associativity
 --   `∀f g x. g =<< (f =<< x) ≅ ((g =<<) . f) =<< x`
+
 class Applicative k => Monad k where
   -- Pronounced, bind.
   (=<<) ::
@@ -36,8 +38,9 @@ instance Monad ExactlyOne where
     (a -> ExactlyOne b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ExactlyOne"
+  (=<<) fab fa =
+     let x = runExactlyOne fa
+        in (fab x)
 
 -- | Binds a function on a List.
 --
@@ -111,8 +114,7 @@ instance Monad ((->) t) where
   k (a -> b)
   -> k a
   -> k b
-(<**>) =
-  error "todo: Course.Monad#(<**>)"
+(<**>) fab fa = (\ab -> ab <$> fa) =<< fab
 
 infixl 4 <**>
 
