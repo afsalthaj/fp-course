@@ -66,6 +66,8 @@ instance Monad Optional where
 --
 -- >>> ((*) =<< (+10)) 7
 -- 119
+-- Applicative of reader is (t -> (a -> b)) -> (t a) -> t b (in Scala, F[X => (A => B)] and F[X => A] returns F[X => B])
+-- Monad of reader is (a -> (t -> b)) -> (t a ) -> t b      (in Scala, A => F[X => B]   and F[X => A] returns F[X => B])
 instance Monad ((->) t) where
   (=<<) ::
     (a -> ((->) t b))
