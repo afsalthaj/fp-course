@@ -123,7 +123,7 @@ infixl 4 <**>
 -- >>> join (Full Empty)
 -- Empty
 --
--- >>> join (Full (Full 7))
+-- >>> Joi (Full (Full 7))
 -- Full 7
 --
 -- >>> join (+) 7
@@ -132,8 +132,7 @@ join ::
   Monad k =>
   k (k a)
   -> k a
-join =
-  error "todo: Course.Monad#join"
+join = (=<<) id
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -146,9 +145,7 @@ join =
   k a
   -> (a -> k b)
   -> k b
-(>>=) =
-  error "todo: Course.Monad#(>>=)"
-
+(>>=) ka akb  = akb =<< ka
 infixl 1 >>=
 
 -- | Implement composition within the @Monad@ environment.
@@ -162,8 +159,7 @@ infixl 1 >>=
   -> (a -> k b)
   -> a
   -> k c
-(<=<) =
-  error "todo: Course.Monad#(<=<)"
+(<=<)bkc akb a = bkc =<< (akb a)
 
 infixr 1 <=<
 
