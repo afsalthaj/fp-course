@@ -27,8 +27,8 @@ instance (Applicative f, Applicative g) =>
 -- Implement the (<*>) function for an Applicative instance for Compose
   (<*>) (Compose fgab) (Compose fga) = Compose (lift2 (<*>) fgab  fga)
 
--- Its impossible, but when we know what g. say Optional, then its impossible, and
--- then it becomes Monad Transformers
+-- Its impossible, but when we know what g. say Optional, then its possible, and
+-- then it becomes Monad Transformers and not actually Compose
 instance (Monad f, Monad g) =>
   Monad (Compose f g) where
 -- Implement the (=<<) function for a Monad instance for Compose
