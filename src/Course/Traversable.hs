@@ -26,6 +26,7 @@ import Course.Compose
 
 -- class Functor t => Traversable t where
    -- traverse :: Applicative k => a -> kb  -> t a -> k (t b)
+       -- its always deconstructing and applying and then reconstructing within f
 class Functor t => Traversable t where
   traverse ::
     Applicative k =>
@@ -50,8 +51,10 @@ instance Traversable ExactlyOne where
     (a -> k b)
     -> ExactlyOne a
     -> k (ExactlyOne b)
-  traverse =
-    error "todo: Course.Traversable traverse#instance ExactlyOne"
+  traverse f eoa =
+    let a = runExactlyOne eoa
+        kb = f a
+       in ExactlyOne <$> kb
 
 instance Traversable Optional where
   traverse ::
@@ -59,8 +62,7 @@ instance Traversable Optional where
     (a -> k b)
     -> Optional a
     -> k (Optional b)
-  traverse =
-    error "todo: Course.Traversable traverse#instance Optional"
+  traverse f opta =  ((\a ->  Full <$> f a)  <$> opta) ?? (pure Empty)
 
 -- | Sequences a traversable value of structures to a structure of a traversable value.
 --
@@ -76,8 +78,7 @@ sequenceA ::
   (Applicative k, Traversable t) =>
   t (k a)
   -> k (t a)
-sequenceA =
-  error "todo: Course.Traversable#sequenceA"
+sequenceA = traverse id
 
 instance (Traversable f, Traversable g) =>
   Traversable (Compose f g) where
