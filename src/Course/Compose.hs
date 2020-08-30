@@ -25,11 +25,14 @@ instance (Applicative f, Applicative g) =>
   pure a = Compose (pure (pure a))
 
 -- Implement the (<*>) function for an Applicative instance for Compose
-  (<*>) (Compose fgab) (Compose fga) = Compose ((<*>) <$> fgab  <*> fga)
+  (<*>) (Compose fgab) (Compose fga) = Compose (lift2 (<*>) fgab  fga)
 
+-- Its impossible, but when we know what g. say Optional, then its impossible, and
+-- then it becomes Monad Transformers
 instance (Monad f, Monad g) =>
   Monad (Compose f g) where
 -- Implement the (=<<) function for a Monad instance for Compose
+
   (=<<) =
     error "todo: Course.Compose (=<<)#instance (Compose f g)"
 
