@@ -23,6 +23,9 @@ import Course.Compose
 --
 -- * The law of composition
 --   `∀f g. traverse ((g <$>) . f) ≅ (traverse g <$>) . traverse f`
+
+-- class Functor t => Traversable t where
+   -- traverse :: Applicative k => a -> kb  -> t a -> k (t b)
 class Functor t => Traversable t where
   traverse ::
     Applicative k =>
