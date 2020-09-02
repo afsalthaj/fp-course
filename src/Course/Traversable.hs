@@ -119,3 +119,5 @@ instance (Traversable f, Traversable g) =>
   traverse f cfga = case cfga of
     InL fa -> InL <$> traverse f fa
     InR ga -> InR <$> traverse f ga
+
+-- traverse of t means deconstructing t and reconstructing it in the context of applicative k
