@@ -166,8 +166,9 @@ valueParser a = P(\input -> Result input a)
   Parser a
   -> Parser a
   -> Parser a
-(|||) =
-  error "todo: Course.Parser#(|||)"
+(|||) (P f) (P g) =   P(\input ->
+                          let res = f input
+                          in if (isErrorResult res) then g input else res)
 
 infixl 3 |||
 
@@ -212,8 +213,7 @@ instance Applicative Parser where
     Parser (a -> b)
     -> Parser a
     -> Parser b
-  (<*>) =
-    error "todo: Course.Parser (<*>)#instance Parser"
+  (<*>) p1 p2 =  (\a -> ((\f -> (f a))  <$>  p1)) =<<  p2
 
 -- | Return a parser that produces a character but fails if
 --
@@ -232,6 +232,10 @@ satisfy ::
   (Char -> Bool)
   -> Parser Char
 satisfy f =  (\c ->  P(\input ->  if (f c) then (Result input c) else UnexpectedChar c))  =<< character
+
+manyThis :: Parser a -> Parser (List a)
+manyThis parser = lift2 (\a b -> a :. b) parser (manyThis parser)
+
 
 -- | Return a parser that produces the given character but fails if
 --
@@ -265,8 +269,7 @@ is char = satisfy (flip (==) char)
 -- True
 digit ::
   Parser Char
-digit =
-  error "todo: Course.Parser#digit"
+digit = satisfy (\a -> Data.Char.isDigit a)
 
 --
 -- | Return a parser that produces a space character but fails if
@@ -290,8 +293,7 @@ digit =
 -- True
 space ::
   Parser Char
-space =
-  error "todo: Course.Parser#space"
+space = satisfy Data.Char.isSpace
 
 -- | Return a parser that conses the result of the first parser onto the result of
 -- the second. Pronounced "cons parser".
@@ -307,8 +309,7 @@ space =
   Parser a
   -> Parser (List a)
   -> Parser (List a)
-(.:.) =
-  error "todo: Course.Parser#(.:.)"
+(.:.) p1 p2 = lift2 (\a b -> a :. b) p1 p2
 
 infixr 5 .:.
 
@@ -337,7 +338,7 @@ list ::
   Parser a
   -> Parser (List a)
 list =
-  error "todo: Course.Parser#list"
+  error "todo"
 
 -- | Return a parser that produces at least one value from the given parser then
 -- continues producing a list of values from the given parser (to ultimately produce a non-empty list).
