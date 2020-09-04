@@ -11,6 +11,7 @@ import Course.Person
 import Course.Functor
 import Course.Applicative
 import Course.Monad
+import Course.Traversable
 import Course.List
 import Course.Optional
 import Data.Char
@@ -353,7 +354,7 @@ list p  = list1 p ||| valueParser Nil
 -- >>> isErrorResult (parse (list1 (character *> valueParser 'v')) "")
 -- True
 list1 :: Parser a  -> Parser (List a)
-list1 parser = (\a -> (\b -> (a :. b)) <$> (list parser)) =<< parser
+list1 parser =  (\a -> (\b -> (a :. b)) <$> (list1 parser ||| valueParser Nil)) =<< parser
 
 -- | Return a parser that produces one or more space characters
 -- (consuming until the first non-space) but fails if
@@ -365,8 +366,7 @@ list1 parser = (\a -> (\b -> (a :. b)) <$> (list parser)) =<< parser
 -- /Tip:/ Use the @list1@ and @space@ functions.
 spaces1 ::
   Parser Chars
-spaces1 =
-  error "todo: Course.Parser#spaces1"
+spaces1 = list1 space
 
 -- | Return a parser that produces a lower-case character but fails if
 --
@@ -378,7 +378,7 @@ spaces1 =
 lower ::
   Parser Char
 lower =
-  error "hhh"
+  satisfy Data.Char.isLower
 
 -- | Return a parser that produces an upper-case character but fails if
 --
@@ -389,8 +389,7 @@ lower =
 -- /Tip:/ Use the @satisfy@ and @Data.Char#isUpper@ functions.
 upper ::
   Parser Char
-upper =
-  error "todo: Course.Parser#upper"
+upper = satisfy Data.Char.isUpper
 
 -- | Return a parser that produces an alpha character but fails if
 --
@@ -402,7 +401,7 @@ upper =
 alpha ::
   Parser Char
 alpha =
-  error "todo: Course.Parser#alpha"
+  satisfy Data.Char.isAlpha
 
 -- | Return a parser that sequences the given list of parsers by producing all their results
 -- but fails on the first failing parser of the list.
@@ -418,8 +417,7 @@ alpha =
 sequenceParser ::
   List (Parser a)
   -> Parser (List a)
-sequenceParser =
-  error "todo: Course.Parser#sequenceParser"
+sequenceParser l = reverse <$> traverse id (reverse l)
 
 -- | Return a parser that produces the given number of values off the given parser.
 -- This parser fails if the given parser fails in the attempt to produce the given number of values.
