@@ -509,8 +509,7 @@ surnameParser =
 -- True
 smokerParser ::
   Parser Bool
-smokerParser =
-  error "todo: Course.Parser#smokerParser"
+smokerParser = (\_ -> True)  <$> (is 'y') |||  (\_ -> False) <$>  (is 'n')
 
 -- | Write part of a parser for Person#phoneBody.
 -- This parser will only produce a string of digits, dots or hyphens.
@@ -531,8 +530,8 @@ smokerParser =
 -- Result >a123-456< ""
 phoneBodyParser ::
   Parser Chars
-phoneBodyParser =
-  error "todo: Course.Parser#phoneBodyParser"
+phoneBodyParser = list (digit ||| is '-')
+
 
 -- | Write a parser for Person.phone.
 --
@@ -553,8 +552,7 @@ phoneBodyParser =
 -- True
 phoneParser ::
   Parser Chars
-phoneParser =
-  error "todo: Course.Parser#phoneParser"
+phoneParser = (\d ->(\_ -> d) <$> (is '#'))  =<<  ((\d ->   ((\b -> (d :. b))  <$>  phoneBodyParser))  =<<  digit)
 
 -- | Write a parser for Person.
 --
