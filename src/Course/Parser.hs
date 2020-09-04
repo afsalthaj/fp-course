@@ -234,10 +234,6 @@ satisfy ::
   -> Parser Char
 satisfy f =  (\c ->  P(\input ->  if (f c) then (Result input c) else UnexpectedChar c))  =<< character
 
-manyThis :: Parser a -> Parser (List a)
-manyThis parser = lift2 (\a b -> a :. b) parser (manyThis parser)
-
-
 -- | Return a parser that produces the given character but fails if
 --
 --   * The input is empty.
@@ -530,7 +526,7 @@ smokerParser = (\_ -> True)  <$> (is 'y') |||  (\_ -> False) <$>  (is 'n')
 -- Result >a123-456< ""
 phoneBodyParser ::
   Parser Chars
-phoneBodyParser = list (digit ||| is '-')
+phoneBodyParser = list (digit ||| is '-' ||| is '.')
 
 
 -- | Write a parser for Person.phone.
@@ -552,7 +548,7 @@ phoneBodyParser = list (digit ||| is '-')
 -- True
 phoneParser ::
   Parser Chars
-phoneParser = (\d ->(\_ -> d) <$> (is '#'))  =<<  ((\d ->   ((\b -> (d :. b))  <$>  phoneBodyParser))  =<<  digit)
+phoneParser = (\d -> (\_ -> d) <$> (is '#'))  =<<  ((\d -> ((\b -> (d :. b))  <$>  phoneBodyParser))  =<<  digit)
 
 -- | Write a parser for Person.
 --
@@ -607,10 +603,31 @@ phoneParser = (\d ->(\_ -> d) <$> (is '#'))  =<<  ((\d ->   ((\b -> (d :. b))  <
 --
 -- >>> parse personParser "123  Fred   Clarkson    y     123-456.789#"
 -- Result >< Person 123 "Fred" "Clarkson" True "123-456.789"
+
+-- sh (#)
+--data Person =
+  -- Person
+   -- Int   -- age
+   -- Chars -- first name
+   -- Chars -- surname
+   -- Bool  -- smoker
+   -- Chars -- phone number
+  --deriving (Eq, Show)
+
 personParser ::
   Parser Person
-personParser =
-  error "todo: Course.Parser#personParser"
+personParser = do {
+       x1 <- ageParser
+       ;_  <- (list space)
+       ;x3 <- firstNameParser
+       ;_  <- (list space)
+       ;x4 <- surnameParser
+       ;_  <- (list space)
+       ;x5 <- smokerParser
+       ;_  <- (list space)
+       ;x6 <- phoneParser
+       ; return (Person x1 x3 x4 x5 x6)
+     }
 
 -- Make sure all the tests pass!
 
