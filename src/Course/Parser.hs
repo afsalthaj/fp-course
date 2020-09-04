@@ -433,8 +433,7 @@ thisMany ::
   Int
   -> Parser a
   -> Parser (List a)
-thisMany =
-  error "todo: Course.Parser#thisMany"
+thisMany n p = sequenceParser (replicate n p)
 
 -- | This one is done for you.
 --
@@ -466,8 +465,7 @@ ageParser =
 -- True
 firstNameParser ::
   Parser Chars
-firstNameParser =
-  error "todo: Course.Parser#firstNameParser"
+firstNameParser = (\u -> (((:.) u) <$> list lower)) =<< upper
 
 -- | Write a parser for Person.surname.
 --
@@ -489,7 +487,11 @@ firstNameParser =
 surnameParser ::
   Parser Chars
 surnameParser =
-  error "todo: Course.Parser#surnameParser"
+  let p1 = upper
+      p2 = thisMany 5 lower
+      p3 = list lower
+      p4 = (\l1 ->  ((\l2 -> (l1 ++ l2))  <$>  p3)) =<< p2
+      in (\u -> ((\l3 -> (u :. l3))  <$>  p4)) =<< p1
 
 -- | Write a parser for Person.smoker.
 --
