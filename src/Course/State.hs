@@ -142,8 +142,7 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM =
-  error "todo: Course.State#findM"
+findM f = foldRight (\a foa -> let pa = (f a) in lift2 (\b o -> if (b) then Full a else o) pa foa) (pure Empty)
 
 -- | Find the first element in a `List` that repeats.
 -- It is possible that no element repeats, hence an `Optional` result.
