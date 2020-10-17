@@ -80,8 +80,7 @@ instance Functor (State s) where
     -> State s a
     -> State s b
   (<$>) f sa =
-    let x = runState sa
-       in State(\s -> let (a, s') = (x s) in ((f a), s'))
+    State(\s -> let (a, s') = (runState sa s) in ((f a), s'))
 -- | Implement the `Applicative` instance for `State s`.
 --
 -- >>> runState (pure 2) 0
@@ -96,14 +95,16 @@ instance Applicative (State s) where
   pure ::
     a
     -> State s a
-  pure =
-    error "todo: Course.State pure#instance (State s)"
+  pure a = State(\s -> (a, s))
   (<*>) ::
     State s (a -> b)
     -> State s a
     -> State s b
-  (<*>) =
-    error "todo: Course.State (<*>)#instance (State s)"
+  (<*>) sab sa =
+    State(\s ->
+            (let (f, s') = (runState sab s)
+             in
+               (let (a, s2) = (runState sa s') in ((f a), s2))))
 
 -- | Implement the `Monad` instance for `State s`.
 --
