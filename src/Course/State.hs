@@ -138,7 +138,7 @@ instance Monad (State s) where
 -- >>> let p x = (\s -> (const $ pure (x == 'i')) =<< put (1+s)) =<< get in runState (findM p $ listh ['a'..'h']) 0
 -- (Empty,8)
 findM ::
-  Monad f =>
+  Applicative f =>
   (a -> f Bool)
   -> List a
   -> f (Optional a)
