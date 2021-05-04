@@ -31,7 +31,11 @@ import qualified Numeric as N
 -- BEGIN Helper functions and data types
 
 -- The custom list type -- list is a recursive algebraic data type
-data List t = Nil | t :. List t
+-- operators beginning with a non-alpha character is infix by default.
+-- data List t = Nil | t :. List t
+data List t = 
+  Nil 
+  | t :. List t
   deriving (Eq, Ord)
 
 -- Right-associative
@@ -49,6 +53,8 @@ infinity =
 
 -- CONSTRUCTOR REPLACEMENT
 -- functions over List that you may consider using
+-- constructor replacement right acssociative
+-- foldLeft is left associative order
 foldRight :: (a -> b -> b) -> b -> List a -> b
 foldRight _ b Nil      = b
 foldRight f b (h :. t) = f h (foldRight f b t)
@@ -98,6 +104,19 @@ foldLeft f b (h :. t) = let b' = f b h in b' `seq` foldLeft f b' t
 headOr :: a -> List a -> a
 headOr = foldRight const
 
+-- Tony's course result
+headOr2 :: a -> List a -> a
+headOr2 = \a -> \b -> case b of
+  Nil -> a
+  a :. b -> a
+
+-- Tony's course result3
+headOr3 :: a -> List a -> a
+headOr3 x Nil = x
+headOr3 _ (h :. _) = h  
+
+
+
 -- | The product of the elements of a list.
 --
 -- >>> product Nil
@@ -108,10 +127,14 @@ headOr = foldRight const
 --
 -- >>> product (1 :. 2 :. 3 :. 4 :. Nil)
 -- 24
-product ::
-  List Int
-  -> Int
+product :: List Int -> Int
 product = foldRight (\x y -> x * y) 1
+
+-- Tony's course
+product2 :: List Int -> Int
+product2 = \list -> case list of
+  Nil -> 1
+  h :. tail -> (h * product2 tail) 
 
 -- | Sum the elements of the list.
 --
@@ -127,6 +150,14 @@ sum ::
   -> Int
 sum = foldRight (+) 0
 
+-- Tony's course
+sum2 :: List Int -> Int
+sum2 Nil = 0
+sum2 (h :. t) = h + sum2 t
+
+sumAgain :: List Int -> Int
+sumAgain = foldLeft (+) 0
+--sumAgain = \list -> foldLeft (+) 0 list
 -- | Return the length of the list.
 --
 -- >>> length (1 :. 2 :. 3 :. Nil)
@@ -137,6 +168,16 @@ length ::
   List a
   -> Int
 length = foldRight (const (1 +)) 0
+
+-- Tony's course
+length2 :: List Int -> Int
+length2 Nil = 0
+length2 (h :. t) = 1 + length2 t
+
+-- lengthAgain:: List a -> Int
+--lengthAgain = foldLeft (\n -> \_ -> n + 1 ) 0
+-- lengthAgain = (\n -> const (n + 1)) 0
+
 
 -- | Map the given function on each element of the list.
 --
@@ -151,6 +192,31 @@ map ::
   -> List a
   -> List b
 map f = foldRight ((:.) . f) Nil
+
+-- Tony's course
+map2 ::
+  (a -> b)
+  -> List a
+  -> List b
+map2 f list = case list of
+  Nil -> Nil
+  h :. t -> f(h) :. map2 f t 
+
+mapAgainButReversed ::
+  (a -> b)
+  -> List a
+  -> List b
+mapAgainButReversed f list = (foldLeft (\b -> \a -> (f a) :. b) Nil) list
+
+mapAgain ::
+  (a -> b)
+  -> List a
+  -> List b
+mapAgain f list = (foldRight (\a -> \b -> (f a) :. b) Nil) list
+-- mapAgain f list = (foldRight (\a -> \b -> (:.)(f a)(b) Nil) list
+--mapAgain f = foldRight ((:.) . f) Nil
+
+
 
 -- | Return elements satisfying the given predicate.
 --
@@ -185,6 +251,12 @@ filter f = foldRight (\x y -> if f x then (x :. y) else y) Nil
   -> List a
   -> List a
 (++) = flip (foldRight (:.))
+-- (++) = \l1 -> \l2 -> (flip foldRight (\a -> \b -> (a :. b)))(l1) l2
+-- (++ ) Nil y = y
+-- (++) (h :. t) y = h :. ((++) t y)
+-- ( ++ ) x y = foldRight (:.) y x
+flipp :: (a -> b -> c) -> b -> a -> c
+fliip f a b =  f b a
 
 infixr 5 ++
 
@@ -202,6 +274,12 @@ flatten ::
   List (List a)
   -> List a
 flatten = foldRight (++) Nil
+
+-- Intuition. Every constructor is replaced with ++. This is fantastic
+flatten2:: List (List a) -> List a
+flatten2 list = case list of
+  Nil -> Nil
+  h :. t -> h ++ (flatten2 t)
 
 -- | Map a function then flatten to a list.
 --
@@ -312,6 +390,22 @@ reverse ::
   List a
   -> List a
 reverse = foldLeft (flip (:.)) Nil
+-- reverse = foldLeft (\acc -> \a -> (:.) a acc) Nil
+-- reverse = foldLeft (flip (:.)) Nil
+
+--Tony's course, non linear time solution
+reverse2:: List a -> List a
+reverse2 list = case list of
+  Nil -> Nil
+  h :. t -> reverse2 t ++ (h :. Nil)
+
+-- Make it recursion Basically look at the position of recursion
+reverse0 :: List a -> List a -> List a
+reverse0 acc Nil = acc
+reverse0 acc (h :. t) = reverse0(h :. acc) t
+
+reverseSuper :: List a -> List a 
+reverseSuper = reverse0 Nil
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
